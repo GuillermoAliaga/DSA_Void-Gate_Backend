@@ -52,4 +52,30 @@ public class UserManagerImplTest {
         List<User> lista = manager.getUsuarios();
         assertEquals("Debe haber 2 usuarios registrados", 2, lista.size());
     }
+
+    @Test
+    public void testLoginExitoso() {
+        manager.registrarUsuario("Erik", "erik@example.com", "1234");
+
+        User u = manager.loginUsuario("erik@example.com", "1234");
+
+        assertNotNull("El usuario devuelto no debe ser null", u);
+        assertEquals("El email del usuario logueado debe ser el correcto", "erik@example.com", u.getEmail());
+    }
+
+    @Test
+    public void testLoginPasswordIncorrecta() {
+        manager.registrarUsuario("Erik", "erik@example.com", "1234");
+
+        User u = manager.loginUsuario("erik@example.com", "passwordErronea");
+
+        assertNull("El usuario devuelto debe ser null (contraseña incorrecta)", u);
+    }
+
+    @Test
+    public void testLoginUsuarioNoExistente() {
+        User u = manager.loginUsuario("noexiste@example.com", "1234");
+
+        assertNull("El usuario devuelto debe ser null (email no existe)", u);
+    }
 }
