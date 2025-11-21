@@ -28,11 +28,24 @@ public class Servicio {
     })
     public Response registrarUsuario(User u) {
         try {
+            //Campos NULL
             if (u == null || u.getEmail() == null || u.getPassword() == null) {
                 return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("Faltan datos obligatorios (nombre, email o contraseña)").build();
+                        .entity("Faltan datos obligatorios (email o contraseña)").build();
             }
 
+            //Campos vacíos (" ")
+            if(u.getEmail().trim().isEmpty() || u.getPassword().trim().isEmpty()){
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("Los campos obligatorios no pueden estar vacíos.").build();
+            }
+
+            //Formato del Email
+            String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
+            if(!u.getEmail().matches(EMAIL_REGEX)){
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("El formato del email no es válido.").build();
+            }
             User nuevo = m.registrarUsuario(u.getNombre(), u.getEmail(), u.getPassword());
 
             if (nuevo == null) {

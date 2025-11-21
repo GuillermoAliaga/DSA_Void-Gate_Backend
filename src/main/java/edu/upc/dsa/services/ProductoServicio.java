@@ -25,8 +25,9 @@ public class ProductoServicio {
             pm.anadirproducto("Chaleco antibalas", 75);
         }
     }
+    
+    @GET
 
-    @GET // Metodo HTTP GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Obtener el listado de productos de la tienda",
@@ -65,7 +66,11 @@ public class ProductoServicio {
         try {
             if (producto == null || producto.getNombreproducto() == null || producto.getNombreproducto().isEmpty()) {
                 return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("Falta el nombre del producto o el precio").build();
+                        .entity("Falta el nombre del producto o el precio.").build();
+            }
+
+            if(producto.getPrecio() < 0){
+                return Response.status(Response.Status.BAD_REQUEST).entity("Insertar un precio válido.").build();
             }
 
             Producto nuevo = this.pm.anadirproducto(producto.getNombreproducto(), producto.getPrecio());
