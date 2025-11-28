@@ -2,6 +2,7 @@ package edu.upc.dsa.modelos;
 
 import java.util.HashMap;
 
+
 public class User {
     private String id;
     private String nombre;
