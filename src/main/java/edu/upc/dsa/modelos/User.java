@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 
 public class User {
-    private String id;
+    private int id;
     private String nombre;
     private String email;
     private String password;
@@ -17,8 +17,7 @@ public class User {
         //this.inventario = new HashMap<>();
     }
 
-    public User(String id, String nombre, String email, String password) {
-        this.id = id;
+    public User(String nombre, String email, String password) {
         this.nombre = nombre;
         this.email = email;
         this.password = password;
@@ -45,11 +44,11 @@ public class User {
         }
     }*/
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 

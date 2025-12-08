@@ -20,11 +20,11 @@ public class ProductoServicio {
     public ProductoServicio() {
         this.pm = ProductoManagerImpl.getInstance();
 
-        if (pm.listadeproductos().isEmpty()) {
-            pm.anadirproducto("Jeringuilla", 25);
-            pm.anadirproducto("Katana", 200);
-            pm.anadirproducto("Chaleco antibalas", 75);
-            pm.anadirproducto("Bloque de energia", 50);
+        if (pm.getProductos().isEmpty()) {
+            pm.addProducto("Jeringuilla", 25);
+            pm.addProducto("Katana", 200);
+            pm.addProducto("Chaleco antibalas", 75);
+            pm.addProducto("Bloque de energia", 50);
         }
     }
     
@@ -40,7 +40,7 @@ public class ProductoServicio {
     })
     public Response getProductos() {
         try {
-            List<Producto> listaProductos = this.pm.listadeproductos();
+            List<Producto> listaProductos = this.pm.getProductos();
 
             return Response.status(Response.Status.OK).entity(listaProductos).build();
 
@@ -66,7 +66,7 @@ public class ProductoServicio {
 
     public Response anadirProducto(Producto producto) {
         try {
-            if (producto == null || producto.getNombreproducto() == null || producto.getNombreproducto().isEmpty()) {
+            if (producto == null || producto.getNombre() == null || producto.getNombre().isEmpty()) {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("Falta el nombre del producto o el precio.").build();
             }
@@ -75,11 +75,11 @@ public class ProductoServicio {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Insertar un precio válido.").build();
             }
 
-            Producto nuevo = this.pm.anadirproducto(producto.getNombreproducto(), producto.getPrecio());
+            Producto nuevo = this.pm.addProducto(producto.getNombre(), producto.getPrecio());
 
             if (nuevo == null) {
                 return Response.status(Response.Status.CONFLICT)
-                        .entity("El nombre del producto '" + producto.getNombreproducto() + "' ya existe.").build();
+                        .entity("El nombre del producto '" + producto.getNombre() + "' ya existe.").build();
             }
 
             return Response.status(Response.Status.CREATED).entity(nuevo).build();
@@ -103,7 +103,7 @@ public class ProductoServicio {
     })
     public Response getProductoPorNombre(@PathParam("nombre") String nombre) {
         try {
-            Producto p = this.pm.getproducto(nombre);
+            Producto p = this.pm.getProducto(nombre);
 
             if (p == null) {
                 return Response.status(Response.Status.NOT_FOUND)
@@ -134,12 +134,12 @@ public class ProductoServicio {
     })
     public Response comprarProducto(ObjetoCompra compra) {
         try {
-            if (compra == null || compra.getEmailUser() == null || compra.getNombreProducto() == null) {
+            if (compra == null || compra.getUserId() <=0 || compra.getItemId() <=0) {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("Faltan datos: nombreProducto o emailUser").build();
             }
 
-            int resultado = this.pm.comprarProducto(compra.getNombreProducto(), compra.getEmailUser());
+            int resultado = this.pm.comprarProducto(compra.getItemId(), compra.getUserId());
 
             switch (resultado) {
                 case 0: // Éxito

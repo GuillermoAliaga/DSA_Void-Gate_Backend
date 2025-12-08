@@ -1,32 +1,36 @@
 package edu.upc.dsa.modelos;
 
 public class Producto {
-    private String id;
-    private String nombreproducto;
+    private int id;
+    private String nombre;
     private int precio;
 
-    public Producto() {}
+    // 1. Constructor vacío (OBLIGATORIO para el ORM)
+    public Producto() {
+    }
 
-    public Producto(String id, String nombreproducto, int precio) {
-        this.id = id;
-        this.nombreproducto = nombreproducto;
+    // 2. Constructor para crear productos nuevos
+    // NOTA: No pasamos ID porque es auto-increment en la BBDD
+    public Producto(String nombre, int precio) {
+        this.nombre = nombre;
         this.precio = precio;
     }
 
-    public String getId() {
+    // GETTERS Y SETTERS
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public String getNombreproducto() {
-        return nombreproducto;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setNombreproducto(String nombreproducto) {
-        this.nombreproducto = nombreproducto;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     public int getPrecio() {
@@ -36,5 +40,4 @@ public class Producto {
     public void setPrecio(int precio) {
         this.precio = precio;
     }
-
 }

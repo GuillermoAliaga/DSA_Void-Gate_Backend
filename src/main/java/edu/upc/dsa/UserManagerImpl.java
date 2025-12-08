@@ -21,34 +21,40 @@ public class UserManagerImpl implements UserManager {
 
     @Override
     public User registrarUsuario(String nombre, String email, String password) {
-        /*for (User u : usuarios) {
-            if (u.getEmail().equals(email))
-                return null;
-        }
-
-        User nuevo = new User(UUID.randomUUID().toString(), nombre, email, password);
-        nuevo.setEmailVerificado(false);
-        usuarios.add(nuevo);
-        return nuevo;*/
         Session session = null;
+        User u = null;
         try {
             session = FactorySession.openSession();
 
-            // 1. Crear el objeto Java
-            User u = new User(UUID.randomUUID().toString(), nombre, email, password);
+            // 1. Crear objeto Java
+            u = new User(nombre, email, password);
 
-            // 2. Guardar en DB
+            // 2. Generar y asignar código AQUÍ (Antes de tocar la BBDD)
+            // Esto elimina la necesidad de usar funciones complejas de update luego.
+            String codigo = String.valueOf((int) (Math.random() * 900000) + 100000);
+            u.setCodigoVerificacion(codigo);
+            u.setEmailVerificado(false); // O el valor numérico 0 si usas int
+
+            // 3. Guardar en BBDD (INSERT)
+            // Como ya lleva el código, se guarda todo junto.
             session.save(u);
 
-            logger.info("Usuario registrado en DB: " + email);
+            logger.info("Usuario registrado: " + email);
             return u;
 
         } catch (Exception e) {
-            // Probablemente error por email duplicado (Constraint Violation)
-            logger.error("Error al registrar usuario: " + e.getMessage());
+            // Capturar duplicados
+            if (e.getMessage() != null && e.getMessage().contains("Duplicate")) {
+                logger.error("El email ya existe: " + email);
+            } else {
+                logger.error("Error al registrar: " + e.getMessage());
+            }
             return null;
         } finally {
-            if (session != null) session.close(); // IMPORTANTE: Cerrar sesión
+            // 4. Cerrar sesión sin usar isOpen() (solo verificamos null)
+            if (session != null) {
+                session.close();
+            }
         }
     }
 
@@ -91,34 +97,34 @@ public class UserManagerImpl implements UserManager {
         return null;
     }
 
-    @Override
     public User getUsuario(String email) {
-        /*for (User u : usuarios) {
-            if (u.getEmail().equals(email)) return u;
-        }
-        return null;*/
         Session session = null;
+        User usuarioEncontrado = null;
         try {
             session = FactorySession.openSession();
-            List<Object> usersList = session.findAll(User.class);
 
-            for (Object obj : usersList) {
-                User u = (User) obj;
-                // Comparamos el email del usuario de la DB con el que buscamos
-                if (u.getEmail().equals(email)) {
-                    return u; // ¡Encontrado!
+            // 1. SOLUCIÓN: Usar findAll con 1 solo argumento (trae todo)
+            // Esto elimina el error "Expected 1 argument but found 2"
+            List<Object> allUsers = session.findAll(User.class);
+
+            // 2. Buscamos manualmente en la lista devuelta
+            if (allUsers != null) {
+                for (Object obj : allUsers) {
+                    User u = (User) obj;
+                    if (u.getEmail().equals(email)) {
+                        usuarioEncontrado = u;
+                        break; // Ya lo tenemos, salimos del bucle
+                    }
                 }
             }
-
-            // Si termina el bucle y no lo encuentra
-            return null;
-
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error buscando usuario: " + e.getMessage());
         } finally {
-            if (session != null) session.close();
+            if (session != null) {
+                session.close();
+            }
         }
-        return null;
+        return usuarioEncontrado;
     }
 
     @Override
@@ -126,42 +132,73 @@ public class UserManagerImpl implements UserManager {
         return usuarios;
     }
 
-    public boolean enviarCodigoVerificacion(String email) {
-        User user = this.getUsuario(email);
+    // En UserManagerImpl.java
 
-        if (user == null) {
-            return false;
+    public boolean enviarCodigoVerificacion(User u) {
+        Session session = null;
+        try {
+            // 1. Generar el código
+            int code = (int) (Math.random() * 900000) + 100000;
+            String codigoStr = String.valueOf(code);
+
+            // 2. Asignar al objeto en memoria
+            u.setCodigoVerificacion(codigoStr);
+
+            // 3. Actualizar la BBDD
+            session = FactorySession.openSession();
+            session.update(u); // Asegúrate de que tu ORM tiene .update()
+
+            System.out.println("═══════════════════════════════════════");
+            System.out.println("📧 CÓDIGO DE VERIFICACIÓN");
+            System.out.println("Email: " + u.getEmail());
+            System.out.println("Código: " + codigoStr);
+            System.out.println("═══════════════════════════════════════");
+            return true; // ÉXITO
+
+        } catch (Exception e) {
+            logger.error("Error al generar/guardar código para " + u.getEmail() + ": " + e.getMessage());
+            return false; // FALLO
+        } finally {
+            if (session != null) session.close();
         }
-
-        Random random = new Random();
-        String codigo = String.format("%06d", random.nextInt(999999));
-
-        user.setCodigoVerificacion(codigo);
-
-
-        System.out.println("═══════════════════════════════════════");
-        System.out.println("📧 CÓDIGO DE VERIFICACIÓN");
-        System.out.println("Email: " + email);
-        System.out.println("Código: " + codigo);
-        System.out.println("═══════════════════════════════════════");
-
-        return true;
     }
-    public boolean verificarCodigo(String email, String codigo) {
-        User user = this.getUsuario(email);
 
-        if (user == null) {
+    @Override
+    public boolean verificarCodigo(String email, String codigoUsuario) {
+        Session session = null;
+        try {
+            // 1. Obtener usuario desde la BBDD (Tendremos el ID correcto)
+            User u = this.getUsuario(email);
+
+            if (u == null) {
+                logger.warn("Usuario no encontrado: " + email);
+                return false;
+            }
+
+            // 2. Comparar códigos
+            if (u.getCodigoVerificacion() != null && u.getCodigoVerificacion().equals(codigoUsuario)) {
+
+                // 3. Modificar objeto
+                u.setEmailVerificado(true); // O set(1)
+
+                // 4. Actualizar en BBDD
+                session = FactorySession.openSession();
+                session.update(u); // Esto funcionará porque 'u' tiene ID al venir del 'findAll'
+
+                logger.info("Usuario validado: " + email);
+                return true;
+            }
+
+            logger.warn("Código incorrecto.");
             return false;
-        }
 
-        if (codigo.equals(user.getCodigoVerificacion())) {
-            user.setEmailVerificado(true);
-            user.setCodigoVerificacion(null);
-            System.out.println("Email verificado: " + email);
-            return true;
+        } catch (Exception e) {
+            logger.error("Error verificando: " + e.getMessage());
+            return false;
+        } finally {
+            if (session != null) {
+                session.close();
+            }
         }
-
-        System.out.println("Código incorrecto para: " + email);
-        return false;
     }
 }

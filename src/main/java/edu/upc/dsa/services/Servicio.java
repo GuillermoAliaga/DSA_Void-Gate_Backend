@@ -53,7 +53,7 @@ public class Servicio {
                 return Response.status(Response.Status.CONFLICT)
                         .entity("El email ya está registrado").build();
             }
-            boolean enviado = m.enviarCodigoVerificacion(u.getEmail());
+            boolean enviado = m.enviarCodigoVerificacion(u);
 
             if (!enviado) {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

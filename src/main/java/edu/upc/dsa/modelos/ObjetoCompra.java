@@ -1,18 +1,30 @@
 package edu.upc.dsa.modelos;
 
 public class ObjetoCompra {
-    String nombreProducto;
-    String emailUser;
+    private int userId;
+    private int itemId;
 
+    // Constructor vacío
     public ObjetoCompra() {}
 
-    public ObjetoCompra(String nombreProducto, String emailUser) {
-        this.nombreProducto = nombreProducto;
-        this.emailUser = emailUser;
+    public ObjetoCompra(int userId, int itemId) {
+        this.userId = userId;
+        this.itemId = itemId;
     }
 
-    public String getNombreProducto() { return nombreProducto; }
-    public void setNombreProducto(String nombreProducto) { this.nombreProducto = nombreProducto; }
-    public String getEmailUser() { return emailUser; }
-    public void setEmailUser(String emailUser) { this.emailUser = emailUser; }
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public int getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(int itemId) {
+        this.itemId = itemId;
+    }
 }
