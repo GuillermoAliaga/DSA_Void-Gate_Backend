@@ -136,7 +136,7 @@ public class ProductoServicio {
         try {
             if (compra == null || compra.getUserId() <=0 || compra.getItemId() <=0) {
                 return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("Faltan datos: nombreProducto o emailUser").build();
+                        .entity("Faltan datos: UserID o ProductID").build();
             }
 
             int resultado = this.pm.comprarProducto(compra.getItemId(), compra.getUserId());

@@ -8,6 +8,7 @@ public class ObjetoCompra {
     public ObjetoCompra() {}
 
     public ObjetoCompra(int userId, int itemId) {
+
         this.userId = userId;
         this.itemId = itemId;
     }

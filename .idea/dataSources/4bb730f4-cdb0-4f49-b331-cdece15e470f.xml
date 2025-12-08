@@ -1587,7 +1587,7 @@ test\\_%|schema||PUBLIC|&apos;&apos;|UPDATE|G</Grants>
     <schema id="560" parent="1" name="void_gate">
       <AutoIntrospectionLevel>3</AutoIntrospectionLevel>
       <LastIntrospectionLevel>3</LastIntrospectionLevel>
-      <LastIntrospectionLocalTimestamp>2025-12-08.18:37:44</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2025-12-08.20:02:58</LastIntrospectionLocalTimestamp>
       <CollationName>utf8mb4_uca1400_ai_ci</CollationName>
     </schema>
     <user id="561" parent="1" name="mariadb.sys">

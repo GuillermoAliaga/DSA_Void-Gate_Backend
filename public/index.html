@@ -457,7 +457,7 @@
                                 </div>
                                 <h5 class="text-white">${p.nombreproducto}</h5>
                                 <div class="item-price mb-3">${p.precio} CR</div>
-                                <button class="btn btn-sm btn-void-primary w-100" onclick="comprarProducto('${p.nombreproducto}')">
+                                <button class="btn btn-sm btn-void-primary w-100" onclick="comprarProducto(${p.id})">
                                     COMPRAR
                                 </button>
                             </div>
@@ -467,28 +467,60 @@
             });
         }
 
-        window.comprarProducto = function(nombreProducto) {
-            const data = { nombreProducto: nombreProducto, emailUser: currentUserEmail };
+        window.comprarProducto = function(idProducto) {
+            console.log("Intentando comprar producto con ID:", idProducto);
+
+            // 1. Recuperamos el ID del usuario guardado en la sesión
+            // (Asegúrate de que en tu Login haces: sessionStorage.setItem("userId", data.id))
+            let idUsuario = sessionStorage.getItem("userId");
+
+            // Verificación de seguridad
+            if (!idUsuario) {
+                console.error("No se encontró el userId en sessionStorage");
+                alert("Error: No estás identificado. Por favor haz login de nuevo.");
+                return;
+            }
+
+            // 2. Construimos el objeto EXACTO que espera Java (userId e itemId son int)
+            const data = {
+                itemId: parseInt(idProducto), // Convertimos a entero
+                userId: parseInt(idUsuario)   // Convertimos a entero
+            };
+
+            console.log("Enviando datos al servidor:", JSON.stringify(data));
+
             $.ajax({
-                url: URL_PROD + "/comprar",
+                url: URL_PROD + "/comprar", // Asegúrate de que URL_PROD está definida en tu archivo
                 type: "POST",
                 data: JSON.stringify(data),
                 contentType: "application/json",
-                dataType: "text",
-                success: function (res) {
+                dataType: "text", // Esperamos texto o vacío, a veces JSON
+                success: function(res) {
+                    console.log("Compra exitosa:", res);
                     showNotification("¡Objeto adquirido con éxito!", "success");
-                    actualizarDatosUsuario();
-                },
-                error: function (xhr) {
-                    if (xhr.status === 402) showNotification("Créditos insuficientes.", "error");
-                    else if (xhr.status === 201) {
-                         showNotification("¡Objeto adquirido!", "success");
-                         actualizarDatosUsuario();
+
+                    // Actualizamos las monedas/inventario del usuario
+                    if (typeof actualizarDatosUsuario === "function") {
+                        actualizarDatosUsuario();
                     }
-                    else showNotification("Error: " + xhr.responseText, "error");
+                },
+                error: function(xhr) {
+                    console.error("Error en la compra:", xhr);
+
+                    if (xhr.status === 402) {
+                        showNotification("Créditos insuficientes.", "error");
+                    } else if (xhr.status === 201) {
+                        // A veces el 201 cae en error si el dataType no coincide, lo manejamos aquí por si acaso
+                        showNotification("¡Objeto adquirido!", "success");
+                        if (typeof actualizarDatosUsuario === "function") {
+                            actualizarDatosUsuario();
+                        }
+                    } else {
+                        showNotification("Error: " + xhr.responseText, "error");
+                    }
                 }
             });
-        }
+        };
 
         function cargarInventario() {
             const user = window.userData;
