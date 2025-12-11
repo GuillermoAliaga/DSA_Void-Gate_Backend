@@ -16,7 +16,7 @@ public class User {
 
     // --- NUEVO CAMPO PARA EL JSON ---
     // Esto guardará los objetos que recuperamos en el UserManager
-    private List<Inventory> inventario;
+    private transient List<Inventory> inventario;
 
     public User() {
         // Inicializamos la lista vacía para evitar errores de "NullPointerException"
