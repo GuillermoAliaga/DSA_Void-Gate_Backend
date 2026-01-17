@@ -216,4 +216,24 @@ public class UserManagerImpl implements UserManager {
             if (session != null) session.close();
         }
     }
+    public int sumarPuntos(int userId, int puntosGanados) {
+        Session session = null;
+        try {
+            session = FactorySession.openSession();
+            User u = (User) session.get(User.class, userId);
+
+            if (u != null) {
+                int nuevosPuntos = u.getPuntos() + puntosGanados;
+                u.setPuntos(nuevosPuntos);
+
+                session.update(u);
+                return nuevosPuntos;
+            }
+        } catch (Exception e) {
+            logger.error("Error sumando puntos: " + e.getMessage());
+        } finally {
+            if (session != null) session.close();
+        }
+        return -1; // Error
+    }
 }

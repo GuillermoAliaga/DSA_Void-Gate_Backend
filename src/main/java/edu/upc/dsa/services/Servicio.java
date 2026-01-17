@@ -212,4 +212,28 @@ public class Servicio {
                     .entity("Error interno: " + e.getMessage()).build();
         }
     }
+    @PUT
+    @Path("/puntos/{id}/{cantidad}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Sumar puntos al usuario", notes = "Añade la cantidad especificada al total de puntos del usuario")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Puntos actualizados"),
+            @ApiResponse(code = 404, message = "Usuario no encontrado"),
+            @ApiResponse(code = 500, message = "Error interno")
+    })
+    public Response sumarPuntos(@PathParam("id") int id, @PathParam("cantidad") int cantidad) {
+        try {
+            int total = m.sumarPuntos(id, cantidad); // 'm' es tu UserManager
+
+            if (total >= 0) {
+                return Response.status(Response.Status.OK)
+                        .entity("{\"mensaje\":\"Puntos actualizados\", \"total\":" + total + "}")
+                        .build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

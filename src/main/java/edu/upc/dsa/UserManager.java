@@ -11,4 +11,5 @@ public interface UserManager {
     boolean enviarCodigoVerificacion(User u);
     boolean verificarCodigo(String email, String codigo);
     void eliminarUsuario(String email);
+    int sumarPuntos(int userId, int puntosGanados);
 }

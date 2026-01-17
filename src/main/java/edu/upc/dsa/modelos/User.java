@@ -11,6 +11,7 @@ public class User {
     private String email;
     private String password;
     private int monedas;
+    private int puntos;
     private boolean emailVerificado;
     private String codigoVerificacion;
 
@@ -23,6 +24,7 @@ public class User {
         this.email = email;
         this.password = password;
         this.monedas = 1000;
+        this.puntos = 0;
         this.emailVerificado = false;
     }
 
@@ -83,4 +85,6 @@ public class User {
     public void setMonedas(int monedas) {
         this.monedas = monedas;
     }
+    public int getPuntos() {return puntos;}
+    public void setPuntos(int puntos) {this.puntos = puntos;}
 }
