@@ -23,7 +23,7 @@ public class User {
         this.nombre = nombre;
         this.email = email;
         this.password = password;
-        this.monedas = 1000;
+        this.monedas = 0;
         this.puntos = 0;
         this.emailVerificado = false;
     }
