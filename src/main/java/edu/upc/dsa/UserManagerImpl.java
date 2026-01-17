@@ -4,6 +4,8 @@ import edu.upc.dsa.modelos.User;
 import edu.upc.dsa.dao.*;
 import org.apache.log4j.Logger;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 public class UserManagerImpl implements UserManager {
@@ -24,9 +26,10 @@ public class UserManagerImpl implements UserManager {
     public User registrarUsuario(String nombre, String email, String password) {
         Session session = null;
         User u = null;
+        String passwordEncriptada = getMD5(password);
 
         // 1. Crear objeto Java
-        u = new User(nombre, email, password);
+        u = new User(nombre, email, passwordEncriptada);
 
         // 2. Generar y asignar código
         String codigo = String.valueOf((int) (Math.random() * 900000) + 100000);
@@ -55,10 +58,11 @@ public class UserManagerImpl implements UserManager {
             session = FactorySession.openSession();
             // Recuperamos todos los usuarios (o podrías hacer un select por email si tu DAO lo permite)
             List<Object> usersList = session.findAll(User.class);
+            String passwordInputHash = getMD5(password);
 
             for (Object obj : usersList) {
                 User u = (User) obj;
-                if (u.getEmail().equals(email) && u.getPassword().equals(password)) {
+                if (u.getEmail().equals(email) && u.getPassword().equals(passwordInputHash)) {
                     logger.info("Login exitoso: " + email);
 
                     // NOTA: YA NO CARGAMOS EL INVENTARIO AQUÍ.
@@ -178,6 +182,19 @@ public class UserManagerImpl implements UserManager {
             if (session != null) {
                 session.close();
             }
+        }
+    }
+    private String getMD5(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] messageDigest = md.digest(input.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte b : messageDigest) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
         }
     }
 
