@@ -216,21 +216,50 @@ public class UserManagerImpl implements UserManager {
             if (session != null) session.close();
         }
     }
-    public int sumarPuntos(int userId, int puntosGanados) {
+    // Archivo: edu/upc/dsa/UserManagerImpl.java
+
+    @Override
+    public int sumarPuntos(int userId, int puntosDeLaPartida) {
         Session session = null;
         try {
             session = FactorySession.openSession();
             User u = (User) session.get(User.class, userId);
 
             if (u != null) {
-                int nuevosPuntos = u.getPuntos() + puntosGanados;
-                u.setPuntos(nuevosPuntos);
 
-                session.update(u);
-                return nuevosPuntos;
+                if (puntosDeLaPartida > u.getPuntos()) {
+                    u.setPuntos(puntosDeLaPartida);
+                    session.update(u);
+                    return puntosDeLaPartida;
+                } else {
+
+                    return u.getPuntos();
+                }
             }
         } catch (Exception e) {
-            logger.error("Error sumando puntos: " + e.getMessage());
+
+        } finally {
+            if (session != null) session.close();
+        }
+        return -1;
+    }
+    @Override
+    public int updateMonedas(int userId, int cantidad) {
+        Session session = null;
+        try {
+            session = FactorySession.openSession();
+            User u = (User) session.get(User.class, userId);
+
+            if (u != null) {
+                // OJO: Aquí Unity manda el TOTAL, así que usamos setMonedas directo
+                int monedasActuales = u.getMonedas();
+                int nuevasMonedas = monedasActuales + cantidad;
+                u.setMonedas(nuevasMonedas);
+                session.update(u);
+                return cantidad;
+            }
+        } catch (Exception e) {
+            // e.printStackTrace();
         } finally {
             if (session != null) session.close();
         }

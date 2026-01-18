@@ -12,4 +12,5 @@ public interface UserManager {
     boolean verificarCodigo(String email, String codigo);
     void eliminarUsuario(String email);
     int sumarPuntos(int userId, int puntosGanados);
+    int updateMonedas(int userId, int monedas);
 }

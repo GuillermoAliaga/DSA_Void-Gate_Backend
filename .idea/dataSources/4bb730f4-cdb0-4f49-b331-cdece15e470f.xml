@@ -1351,7 +1351,7 @@
     <schema id="560" parent="1" name="void_gate">
       <AutoIntrospectionLevel>3</AutoIntrospectionLevel>
       <LastIntrospectionLevel>3</LastIntrospectionLevel>
-      <LastIntrospectionLocalTimestamp>2026-01-16.15:58:00</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2026-01-17.21:02:29</LastIntrospectionLocalTimestamp>
       <CollationName>utf8mb4_uca1400_ai_ci</CollationName>
     </schema>
     <user id="561" parent="1" name="mariadb.sys">
@@ -1495,31 +1495,36 @@ itemId</ColNames>
       <Position>5</Position>
       <StoredType>int(11)|0s</StoredType>
     </column>
-    <column id="591" parent="569" name="emailVerificado">
+    <column id="591" parent="569" name="puntos">
       <DefaultExpression>0</DefaultExpression>
       <Position>6</Position>
+      <StoredType>int(11)|0s</StoredType>
+    </column>
+    <column id="592" parent="569" name="emailVerificado">
+      <DefaultExpression>0</DefaultExpression>
+      <Position>7</Position>
       <StoredType>tinyint(1)|0s</StoredType>
     </column>
-    <column id="592" parent="569" name="codigoVerificacion">
-      <Position>7</Position>
+    <column id="593" parent="569" name="codigoVerificacion">
+      <Position>8</Position>
       <StoredType>varchar(50)|0s</StoredType>
     </column>
-    <index id="593" parent="569" name="PRIMARY">
+    <index id="594" parent="569" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="594" parent="569" name="email">
+    <index id="595" parent="569" name="email">
       <ColNames>email</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="595" parent="569" name="PRIMARY">
+    <key id="596" parent="569" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <key id="596" parent="569" name="email">
+    <key id="597" parent="569" name="email">
       <UnderlyingIndexName>email</UnderlyingIndexName>
     </key>
   </database-model>

@@ -185,31 +185,16 @@ public class Servicio {
     }
 
     @PUT
-    @Path("/monedas/{email}/{cantidad}")
+    @Path("/monedas/{id}/{cantidad}")
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Modificar monedas (Dev/Test)", notes = "Permite establecer las monedas de un usuario manualmente")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Monedas actualizadas"),
-            @ApiResponse(code = 404, message = "Usuario no encontrado"),
-            @ApiResponse(code = 500, message = "Error interno")
-    })
-    public Response updateMonedas(@PathParam("email") String email, @PathParam("cantidad") int cantidad) {
-        try {
-            User u = m.getUsuario(email);
-            if (u == null) {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Usuario no encontrado").build();
-            }
+    public Response updateMonedas(@PathParam("id") int id, @PathParam("cantidad") int cantidad) {
+        // Llamamos a tu función fácil de monedas
+        int resultado = m.updateMonedas(id, cantidad);
 
-            u.setMonedas(cantidad);
-
-            return Response.status(Response.Status.OK)
-                    .entity("Monedas actualizadas a: " + cantidad).build();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error interno: " + e.getMessage()).build();
+        if (resultado >= 0) {
+            return Response.status(200).entity("Monedas actualizadas: " + resultado).build();
+        } else {
+            return Response.status(404).entity("Error o Usuario no encontrado").build();
         }
     }
     @PUT
